@@ -1,0 +1,29 @@
+les cas de tests pour mon projet de microservices JEE:
+
+afficher toutes les commandes: http://localhost:8080/api/ms-commandes
+
+afficher les commandes d'un produit specifique: http://localhost:8080/api/ms-commandes/commandes-par-produit/1
+
+demonstration de ms-commandes dans github et config server 
+
+demonstration de : la configuration du « microservice-commandes » contient une propriété personnalisée « mes-config-ms.commandes-last » qui permet d’afficher les dernières commandes reçues
+http://localhost:8080/api/ms-commandes/commandes-recentes
+
+changer commandes-last dans le fichier microservice-commandes local et pusher les changements dans github puis tester Actuator avec postman {POST: http://localhost:8080/actuator/refresh }
+puis acceder a http://localhost:8080/api/ms-commandes/commandes-recentes
+
+Personnaliser la supervision de la bonne santé du « microservice-commandes » : dans notre cas, un « microservice-commandes » est en bonne santé lorsqu’il y’a des commandes dans la table « COMMANDE », dans ce cas, le statut est « UP » sinon le statut à afficher est « DOWN »   (a la fin) : http://localhost:8080/actuator/health
+
+
+II
+
+demanstation d'enregistrement de ms-produits et ms-commandes aupres d'Eureka : http://localhost:9102/
+
+afficher tous les produits: http://localhost:8081/api/ms-produits
+
+tester les differemts operations de crud de ms-commandes avec postman 
+
+tester l'implementation de resilience4j pour ms-commandes si ms-produits n'est pas disponible : http://localhost:8080/api/ms-commandes/error
+
+
+

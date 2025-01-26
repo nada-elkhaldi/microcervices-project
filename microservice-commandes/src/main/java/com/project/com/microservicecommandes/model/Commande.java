@@ -27,11 +27,12 @@ public class Commande {
     private Integer produitId;
 
     public Commande() {}
-    public Commande(String description, int quantite, double montant, LocalDate date) {
+    public Commande(String description, int quantite, double montant, LocalDate date, Integer produitId) {
         this.description = description;
         this.quantite = quantite;
         this.montant = montant;
         this.date = date;
+        this.produitId = produitId;
 
     }
     public String getDescription() {

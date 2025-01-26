@@ -47,7 +47,8 @@ public class CommandeService {
                 commandeDTO.getDescription(),
                 commandeDTO.getQuantite(),
                 commandeDTO.getMontant(),
-                commandeDTO.getDate()
+                commandeDTO.getDate(),
+                commandeDTO.getIdProduit()
         );
         commande.setProduit(produit);
         return commandeRepository.save(commande);

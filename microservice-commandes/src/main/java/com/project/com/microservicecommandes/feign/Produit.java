@@ -13,4 +13,8 @@ public class Produit {
     private String image;
     @JsonProperty("prix")
     private Double prix;
+
+    public void setDescription(String produitIndisponible) {
+        this.description = produitIndisponible;
+    }
 }

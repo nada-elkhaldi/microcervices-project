@@ -5,13 +5,16 @@ import com.project.com.microservicecommandes.exception.ValidationException;
 import com.project.com.microservicecommandes.model.Commande;
 import com.project.com.microservicecommandes.service.CommandeService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(value= "/api/ms-commandes",  method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.OPTIONS})
@@ -64,12 +67,13 @@ public class CommandeController implements HealthIndicator {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    @CircuitBreaker(name = "commande-service", fallbackMethod = "fallbackGetAllCommandes")
-    public ResponseEntity<List<Commande>> getAllCommandes() {
-        List<Commande> commandes = commandeService.getAllCommandes();
-        return ResponseEntity.ok(commandes);
-    }
+//    @GetMapping
+//    @CircuitBreaker(name = "commande-service", fallbackMethod = "fallbackGetAllCommandes")
+//    public ResponseEntity<List<Commande>> getAllCommandes() {
+//        List<Commande> commandes = commandeService.getAllCommandes();
+//        return ResponseEntity.ok(commandes);
+//    }
+
 
 
     @GetMapping("/commandes-recentes")
@@ -89,7 +93,15 @@ public class CommandeController implements HealthIndicator {
         }
     }
 
-    public List<Commande> fallbackGetAllCommandes(Throwable throwable) {
+    @GetMapping
+    @TimeLimiter(name = "commandesService", fallbackMethod = "fallbackGetAllCommandes")
+    @CircuitBreaker(name = "commandesService", fallbackMethod = "fallbackGetAllCommandes")
+    public CompletableFuture<List<Commande>> getAllCommandes() {
+        return CompletableFuture.supplyAsync(() -> commandeService.getAllCommandes());
+    }
+
+    @GetMapping("/error")
+    public CompletableFuture<List<Commande>> fallbackGetAllCommandes(Throwable throwable) {
         System.out.println("Fallback triggered: " + throwable.getMessage());
 
         List<Commande> fallbackResponse = new ArrayList<>();
@@ -97,10 +109,27 @@ public class CommandeController implements HealthIndicator {
         placeholderCommande.setDescription("Service Produits indisponible. Impossible de récupérer les commandes.");
         fallbackResponse.add(placeholderCommande);
 
-        return fallbackResponse;
+        return CompletableFuture.completedFuture(fallbackResponse);
     }
 
 
-
+//    @GetMapping
+//    @TimeLimiter(name = "commandesService", fallbackMethod = "fallbackGetAllCommandes")
+//    @CircuitBreaker(name = "commandesService", fallbackMethod = "fallbackGetAllCommandes")
+//    public CompletableFuture<List<Commande>> getAllCommandes() {
+//        return CompletableFuture.supplyAsync(() -> commandeService.getAllCommandes());
+//    }
+//
+//
+//    public CompletableFuture<List<Commande>> fallbackGetAllCommandes(Throwable throwable) {
+//        System.out.println("Fallback déclenché : " + throwable.getMessage());
+//        Commande placeholderCommande = new Commande();
+//        placeholderCommande.setDescription("Service Produits indisponible. Impossible de récupérer les commandes.");
+//        return CompletableFuture.completedFuture(Collections.singletonList(placeholderCommande));
+//    }
 
 }
+
+
+
+
